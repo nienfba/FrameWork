@@ -1,0 +1,6 @@
+vendor/
+srcOLD/
+srcOLDOLD/
+tests/
+config/config.php
+composer.lock
