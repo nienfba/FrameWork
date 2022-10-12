@@ -18,6 +18,10 @@ const DB_USERNAME = 'root';
  * @var string Password for database
  */
 const DB_PASSWORD = '';
+/** 
+ * @var boolean Prefixe for dataTable - Prefixe table width firstLetter_ OR NOT
+ */
+const DB_PREFIXE = false;
 
 
 

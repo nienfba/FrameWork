@@ -2,6 +2,10 @@
 
 Un tout petit FrameWork ;)
 
+Créez un dossier `salonDeLaDiscorde/` à la racine de votre serveur Web et clonez ce dépôt à la racine de ce dossier.
+
+**En dehors de tout autre dépôt GIT (donc en dehors de vos exercices)**
+
 ## Composer 
 
 Pour mettre en place l'autoload PSR-4 de Composer et installer les dépendances
@@ -15,15 +19,15 @@ composer install
 
 ## Config
 
-Créer le fichier config.php à partir de l'exemple
+Créer le fichier `config.php` à partir du fichier `configExemple.php`
 
 
 ## Utilisation
 
-Vous pouvez saisir l'URL vers le fichier index.php 
-Une page d'accueil doit s'afficher 
+Vous pouvez saisir l'URL vers le fichier `index.php`. Exemple : http://localhost/salonDeLaDiscorde/ 
+Une page d'accueil doit s'afficher !
 
-Vous pouvez saisir la route front/test/ après votre URL, un flux Json doit apparaitre.
+Vous pouvez saisir la route `front/test/` après votre URL, un flux Json doit apparaitre. Exemple : http://localhost/salonDeLaDiscorde/front/test/
 
 Regardez dans le dossier src/ 
 Que peut-on y trouver ? 

@@ -30,6 +30,8 @@ abstract class Model
 
         $this->entity = $this->getEntityName();
 
+        $this->prefixe = '';
+
         $this->setTableName();
     }
 
@@ -47,7 +49,8 @@ abstract class Model
     private function setTableName() {
         $entityPart = explode('\\', $this->entity);
         $this->table = strtolower($entityPart[count($entityPart)-1]);
-        $this->prefixe = $this->table[0].'_';
+        if(DB_PREFIXE)
+            $this->prefixe = $this->table[0].'_';
     }
 
     /** Find one element in Data and return Entity Object
