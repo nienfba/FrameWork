@@ -49,7 +49,7 @@ class Renderer
         $viewContent = ob_get_clean();
 
         /** Getting extended Layout */
-        if(isset($extends) || $extends !== false)
+        if(isset($extends) && $extends !== false)
             require(PATH_VIEWS.$extends);
         else
             echo $viewContent;
