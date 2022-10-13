@@ -7,7 +7,7 @@ namespace Nienfba\Framework;
  * 
  * Défini un objet itérable pour stocker et manipuler une collection d'entité
  */
-class EntityCollection implements \Iterator, \Countable  {
+class EntityCollection implements \Iterator, \Countable, \JsonSerializable  {
 
     /**
      * @var array current collection of entities (same entitites)
@@ -51,7 +51,7 @@ class EntityCollection implements \Iterator, \Countable  {
     }
 
     /**
-     * Load allentity inside this collection
+     * Load all entity inside this collection
      * 
      * @param string $model full qualified Model classe name
      * @param string $property property (Foreign Key) name to find all Entity of collection
@@ -123,5 +123,15 @@ class EntityCollection implements \Iterator, \Countable  {
         $this->entities = $entities;
 
         return $this;
+    }
+
+    /**
+     * Permet de sérialisé le collection en JSON
+     *
+     * @return mixed
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->entities;
     }
 }
