@@ -192,11 +192,13 @@ abstract class Model
 
         if ($entity->getId() == null) {
             $sql = "INSERT INTO {$this->table} ({$listCols}) VALUES ({$listTokens})";
+            $entity->setId($this->data->insert($sql, $properties));
         } else {
             $sql = "UPDATE {$this->table} SET $listColsTokens WHERE {$this->prefixe}id = :{$this->prefixe}id";
+            $this->data->insert($sql, $properties);
         }
 
-        return $this->data->insert($sql, $properties);
+        return $entity->getId();
     }
 
     /**

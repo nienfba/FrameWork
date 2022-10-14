@@ -49,7 +49,7 @@ class Controller {
      * @return mixed
      * 
      */
-    public function renderJson(array $params)
+    public function renderJson(mixed $params)
     {
        $this->renderer->renderJson($params);
     }

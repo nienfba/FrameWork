@@ -65,7 +65,7 @@ class Renderer
      * @return void
      * 
      */
-    public function renderJson(array $params)
+    public function renderJson(mixed $params)
     {
         header('Content-Type: application/json');
         echo json_encode($params);
