@@ -137,18 +137,18 @@ class Entity implements \JsonSerializable {
 
         // l'id est privée dans le parent on l'ajoute manuellement
         $propsArray[$prefixe . 'id'] = $this->getId();
-       
-        foreach ($props as $index=>$prop) {
 
-            if(gettype($prop) == 'object' && get_class($prop) !== 'Nienfba\Framework\EntityCollection')
-            {
-                $getter = "get".ucfirst($prop->name);
-                $value = $this->$getter();
+        foreach ($props as $index => $prop) {
 
-                $propName = $prop->name;
+            $getter = "get" . ucfirst($prop->name);
+            $value = $this->$getter();
 
-                $propsArray["{$prefixe}{$propName}"] = $value;
-            }
+            /** On ne retourne pas les EntityCollection */
+            if (gettype($value) == 'object' && get_class($value) == 'Nienfba\Framework\EntityCollection')
+            continue;
+
+
+            $propsArray["{$prefixe}{$prop->name}"] = $value;
         }
 
         return $propsArray;
