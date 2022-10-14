@@ -11,6 +11,11 @@ use Nienfba\Framework\Exception\ActionNotFoundException;
 class Entity implements \JsonSerializable {
 
     /**
+     * @var bool here to prevent serialization relation ManyToOne infinity
+     */
+    static private $serializeLevel = 1;
+
+    /**
      * @var int|null id 
      */
     private ?int $id = null;
@@ -113,10 +118,25 @@ class Entity implements \JsonSerializable {
         $array = ['id'=>$this->getId()];
         foreach($props as $prop) {
             $getter = 'get' . ucfirst($prop->name);
+
+            $value = $this->$getter();
+
+            if (gettype($value) == 'object' && 
+                (get_class($value) == 'Nienfba\Framework\EntityCollection' || is_subclass_of($value, 'Nienfba\Framework\Entity'))
+                && self::$serializeLevel > 1
+            )
+                continue;
+
             $array[$prop->name] = $this->$getter();
         }
 
+        self::$serializeLevel++;
+
         return $array;
+    }
+
+    public static function initSerializationLevel() {
+        self::$serializeLevel = 1;
     }
 
     /** Permet de renvoyer un tableau pour structurer une requête d'hydratation  des DATA
@@ -145,7 +165,7 @@ class Entity implements \JsonSerializable {
 
             /** On ne retourne pas les EntityCollection */
             if (gettype($value) == 'object' && get_class($value) == 'Nienfba\Framework\EntityCollection')
-            continue;
+                continue;
 
 
             $propsArray["{$prefixe}{$prop->name}"] = $value;

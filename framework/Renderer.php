@@ -67,6 +67,9 @@ class Renderer
      */
     public function renderJson(mixed $params)
     {
+        //Init entity serialization level
+        Entity::initSerializationLevel();
+
         header('Content-Type: application/json');
         echo json_encode($params);
         exit();
