@@ -140,12 +140,15 @@ class Entity implements \JsonSerializable {
        
         foreach ($props as $index=>$prop) {
 
-            $getter = "get".ucfirst($prop->name);
-            $value = $this->$getter();
+            if(gettype($prop) == 'object' && get_class($prop) !== 'Nienfba\Framework\EntityCollection')
+            {
+                $getter = "get".ucfirst($prop->name);
+                $value = $this->$getter();
 
-            $propName = $prop->name;
+                $propName = $prop->name;
 
-            $propsArray["{$prefixe}{$propName}"] = $value;
+                $propsArray["{$prefixe}{$propName}"] = $value;
+            }
         }
 
         return $propsArray;

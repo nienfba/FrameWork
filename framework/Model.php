@@ -171,11 +171,12 @@ abstract class Model
                 
             }
 
-            // ENTITY COLLECTION : don't do anything at this time !
+           /*  // ENTITY COLLECTION : don't do anything at this time !
             if (gettype($value) == 'object' && get_class($value) == 'Nienfba\Framework\EntityCollection') {
                 unset($properties[$colonne]);
+                $i--;
                 continue; 
-            }
+            } */
 
 
             // CREATING STRING FOR DATA REQUEST 
