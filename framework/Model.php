@@ -173,7 +173,8 @@ abstract class Model
 
             // ENTITY COLLECTION : don't do anything at this time !
             if (gettype($value) == 'object' && get_class($value) == 'Nienfba\Framework\EntityCollection') {
-               continue; 
+                unset($properties[$colonne]);
+                continue; 
             }
 
 
