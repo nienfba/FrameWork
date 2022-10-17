@@ -5,7 +5,8 @@ namespace Nienfba\Framework;
 use Nienfba\Framework\Exception\ActionNotFoundException;
 use Nienfba\Framework\Exception\ControllerNotFoundException;
 
-class Router {
+class Router
+{
 
     /**
      * @var string controller short Name
@@ -25,8 +26,9 @@ class Router {
     /** Construct
      * 
      */
-    public function __construct() {
-        $this->controller = 'App\Controller\\'.ucfirst((Http::get('c') ?? DEFAULT_CONTROLLER)).'Controller';
+    public function __construct()
+    {
+        $this->controller = 'App\Controller\\' . ucfirst((Http::get('c') ?? DEFAULT_CONTROLLER)) . 'Controller';
 
         $this->action = Http::get('a') ?? DEFAULT_ACTION;
 
@@ -35,26 +37,42 @@ class Router {
         $this->validateRoute();
     }
 
-    private function generateParams() {
+    private function generateParams()
+    {
         $this->params = [];
-        $paramsFromUrl = Http::getAll(['a','c']);
+        $paramsFromUrl = Http::getAll(['a', 'c']);
+        if (isset($paramsFromUrl['p'])) {
+            $tmpParams = explode('/', $paramsFromUrl['p']);
 
-        if (isset($paramsFromUrl['params'])) {
-            $this->params = explode('/', $paramsFromUrl['params']);
-            unset($paramsFromUrl['params']);
+            if (count($tmpParams) == 1)
+                $this->params['id'] = $tmpParams[0];
+            else {
+                for ($j = 0; $j < count($tmpParams); $j = $j + 2) {
+                    $value = $tmpParams[$j + 1];
+                    if (is_numeric($value))
+                        $value = (int)$value;
+                    $this->params[$tmpParams[$j]] = $value;
+                }
+            }
+
+
+
+            unset($paramsFromUrl['p']);
         }
-        
-        $this->params = [...$this->params,...$paramsFromUrl];
+
+
+        //$this->params = [...$this->params,...$paramsFromUrl];
     }
 
     /** Validate routing
      * 
      */
-    private function validateRoute(string $controller = null, string $action = null) {
+    private function validateRoute(string $controller = null, string $action = null)
+    {
         $controller =  $controller ?? $this->controller;
         $action = $action ?? $this->action;
-        if(!class_exists($this->controller))
-            throw new ControllerNotFoundException("Le controller {$this->controller} n'a pas été trouvé !" );
+        if (!class_exists($this->controller))
+            throw new ControllerNotFoundException("Le controller {$this->controller} n'a pas été trouvé !");
 
         if (!method_exists($this->controller, $this->action))
             throw new ActionNotFoundException("Le controller {$this->controller} n'a pas de méthode {$this->action} !");
@@ -102,7 +120,7 @@ class Router {
             }
 
             if ($params !== null) {
-                $i=0;
+                $i = 0;
                 foreach ($params as $index => $param) {
                     $url .= '&params=' . $param;
                     if (++$i < count($params))

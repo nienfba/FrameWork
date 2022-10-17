@@ -120,30 +120,38 @@ class Entity implements \JsonSerializable
      */
     public function jsonSerialize(): mixed
     {
+
         $reflect = new \ReflectionClass($this);
         $props   = $reflect->getProperties();
 
         $array = ['id' => $this->getId()];
+
+        $classPart = explode('\\', get_class($this));
+        $className = lcfirst($classPart[count($classPart) - 1]);
+
         foreach ($props as $prop) {
+
+
             $getter = 'get' . ucfirst($prop->name);
 
-            // Exclude propname like 'email','password','token'
+            // Exclude propname that is define inside entity excludeSerializePropName
             if (in_array($prop->name, $this->excludeSerializePropName))
                 continue;
 
-            $value = $this->$getter();
 
-            if (
-                gettype($value) == 'object' &&
-                (get_class($value) == 'Nienfba\Framework\EntityCollection' || is_subclass_of($value, 'Nienfba\Framework\Entity'))
-                && self::$serializeLevel > 2
-            )
-                continue;
 
-            $array[$prop->name] = $this->$getter();
+            if (gettype($prop->getValue($this)) == 'object' && get_class($prop->getValue($this)) == 'Nienfba\Framework\EntityCollection')
+                $value = URL . "get/{$prop->name}/{$className}/{$this->getId()}";
+            else
+                $value = $this->$getter();
+
+            if (gettype($value) == 'object' && is_subclass_of($value, 'Nienfba\Framework\Entity'))
+                $value = URL . "get/{$prop->name}/{$value->getId()}";
+
+            $array[$prop->name] = $value;
         }
 
-        self::$serializeLevel++;
+
 
         return $array;
     }
