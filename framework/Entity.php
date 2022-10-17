@@ -112,6 +112,7 @@ class Entity implements \JsonSerializable {
      * @return mixed
      */
     public function jsonSerialize(): mixed {
+        $excludePropName = ['email','password','token'];
         $reflect = new \ReflectionClass($this);
         $props   = $reflect->getProperties();
 
@@ -119,11 +120,15 @@ class Entity implements \JsonSerializable {
         foreach($props as $prop) {
             $getter = 'get' . ucfirst($prop->name);
 
+            // Exclude propname like 'email','password','token'
+            if(in_array($prop->name, $excludePropName))
+                continue;
+
             $value = $this->$getter();
 
             if (gettype($value) == 'object' && 
                 (get_class($value) == 'Nienfba\Framework\EntityCollection' || is_subclass_of($value, 'Nienfba\Framework\Entity'))
-                && self::$serializeLevel > 1
+                && self::$serializeLevel > 2
             )
                 continue;
 
