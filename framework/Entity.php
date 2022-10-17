@@ -1,4 +1,5 @@
 <?php
+
 namespace Nienfba\Framework;
 
 use DateTime;
@@ -8,7 +9,8 @@ use Nienfba\Framework\Exception\ActionNotFoundException;
 /**
  * Classe définissant les comportement commun des entités
  */
-class Entity implements \JsonSerializable {
+class Entity implements \JsonSerializable
+{
 
     /**
      * @var bool here to prevent serialization relation ManyToOne infinity
@@ -19,6 +21,11 @@ class Entity implements \JsonSerializable {
      * @var int|null id 
      */
     private ?int $id = null;
+
+    /**
+     * @var array Property exclude to Json Serialize 
+     */
+    private $excludeSerializePropName = [];
 
     /**
      * Get id
@@ -74,27 +81,27 @@ class Entity implements \JsonSerializable {
          * et en les suffixant avec _at pour les date et _id pour les relations.
          * Ce n'est pas "le plus modulable" mais ça fonctionne pour notre cas.
          */
-        
+
         // On récupère le nom de la classe enfant qui utilise cette méthode
-        $classPart = explode('\\',get_class($this));
+        $classPart = explode('\\', get_class($this));
         // la première lettre de la classe en minuscule est le préfixe utilisé pour les colonnes dans la Data
-        $prefixe = lcfirst($classPart[count($classPart)-1][0]).'_';
+        $prefixe = lcfirst($classPart[count($classPart) - 1][0]) . '_';
         // on enlève le préfixe pour que le nom de la colonne corresponde au nom de la propriété de l'entité
-        $name = str_replace($prefixe,'', $name);
+        $name = str_replace($prefixe, '', $name);
 
         // Si on a un suffixe _at : on converti la valeur en objet DateTime pour le transmettre au setter
-        if(strpos($name, '_at')) {
+        if (strpos($name, '_at')) {
             $name = str_replace('_at', 'At', $name);
-            if($value !== null)
+            if ($value !== null)
                 $value = new \DateTime($value);
         }
 
         // ENTITY : load related entity. Si on a un suffixe _id, on charge l'entité associé pour la passer au setter
-        if(strpos($name, '_id')) {
+        if (strpos($name, '_id')) {
             $name = str_replace('_id', '', $name);
-            
+
             // Load entity with modele
-            $modelName = 'App\Model\\'.ucfirst($name).'Model';
+            $modelName = 'App\Model\\' . ucfirst($name) . 'Model';
             $model = new $modelName();
             $value = $model->find((int) $value);
         }
@@ -103,7 +110,7 @@ class Entity implements \JsonSerializable {
         if (method_exists($this, 'set' . ucfirst($name)))
             $this->{'set' . ucfirst($name)}($value); // Exemple : setFirstname($value)
         //else
-            //throw new ActionNotFoundException('La méthode set' . ucfirst($name) . '() n\'existe pas !');
+        //throw new ActionNotFoundException('La méthode set' . ucfirst($name) . '() n\'existe pas !');
     }
 
     /**
@@ -111,22 +118,23 @@ class Entity implements \JsonSerializable {
      *
      * @return mixed
      */
-    public function jsonSerialize(): mixed {
-        $excludePropName = ['App\Entity\User'=>['email','password','token','createdAt']];
+    public function jsonSerialize(): mixed
+    {
         $reflect = new \ReflectionClass($this);
         $props   = $reflect->getProperties();
 
-        $array = ['id'=>$this->getId()];
-        foreach($props as $prop) {
+        $array = ['id' => $this->getId()];
+        foreach ($props as $prop) {
             $getter = 'get' . ucfirst($prop->name);
 
             // Exclude propname like 'email','password','token'
-            if(in_array($prop->name, $excludePropName[get_class($this)]))
+            if (in_array($prop->name, $this->excludeSerializePropName))
                 continue;
 
             $value = $this->$getter();
 
-            if (gettype($value) == 'object' && 
+            if (
+                gettype($value) == 'object' &&
                 (get_class($value) == 'Nienfba\Framework\EntityCollection' || is_subclass_of($value, 'Nienfba\Framework\Entity'))
                 && self::$serializeLevel > 2
             )
@@ -140,7 +148,8 @@ class Entity implements \JsonSerializable {
         return $array;
     }
 
-    public static function initSerializationLevel() {
+    public static function initSerializationLevel()
+    {
         self::$serializeLevel = 1;
     }
 
@@ -149,7 +158,8 @@ class Entity implements \JsonSerializable {
      * @param void
      * @return array
      */
-    public function getPropertyHydrateData(Model $model) : array {
+    public function getPropertyHydrateData(Model $model): array
+    {
 
         /** Get Prefixe from model */
         $prefixe =  $model->getPrefixe();
@@ -185,16 +195,34 @@ class Entity implements \JsonSerializable {
      * @param void
      * @return void
      */
-    public function save() {
+    public function save()
+    {
         // On récupère le nom de la classe enfant qui utilise cette méthode
         $classPart = explode('\\', get_class($this));
 
-        $entityClassName = $classPart[count($classPart)-1];
+        $entityClassName = $classPart[count($classPart) - 1];
 
         /** On appel la méthode Save du modele associé */
-        $modelName = 'App\Model\\'.$entityClassName.'Model';
+        $modelName = 'App\Model\\' . $entityClassName . 'Model';
         $model = new $modelName();
         $model->save($this);
+    }
 
+    /**
+     * Get property exclue to Json Serialize
+     */
+    public function getExcludeSerializePropName(): array
+    {
+        return $this->excludeSerializePropName;
+    }
+
+    /**
+     * Set property exclue to Json Serialize
+     */
+    public function setExcludeSerializePropName(array $excludeSerializePropName): self
+    {
+        $this->excludeSerializePropName = $excludeSerializePropName;
+
+        return $this;
     }
 }
