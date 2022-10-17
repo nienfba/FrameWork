@@ -112,7 +112,7 @@ class Entity implements \JsonSerializable {
      * @return mixed
      */
     public function jsonSerialize(): mixed {
-        $excludePropName = ['email','password','token'];
+        $excludePropName = ['App\Entity\User'=>['email','password','token','createdAt']];
         $reflect = new \ReflectionClass($this);
         $props   = $reflect->getProperties();
 
@@ -121,7 +121,7 @@ class Entity implements \JsonSerializable {
             $getter = 'get' . ucfirst($prop->name);
 
             // Exclude propname like 'email','password','token'
-            if(in_array($prop->name, $excludePropName))
+            if(in_array($prop->name, $excludePropName[get_class($this)]))
                 continue;
 
             $value = $this->$getter();
