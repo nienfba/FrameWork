@@ -13,11 +13,6 @@ class Entity implements \JsonSerializable
 {
 
     /**
-     * @var bool here to prevent serialization relation ManyToOne infinity
-     */
-    static private $serializeLevel = 1;
-
-    /**
      * @var int|null id 
      */
     private ?int $id = null;
@@ -138,12 +133,10 @@ class Entity implements \JsonSerializable
             if (in_array($prop->name, $this->excludeSerializePropName))
                 continue;
 
+            $value = $this->$getter();
 
-
-            if (gettype($prop->getValue($this)) == 'object' && get_class($prop->getValue($this)) == 'Nienfba\Framework\EntityCollection')
+            if (gettype($value) == 'object' && get_class($value) == 'Nienfba\Framework\EntityCollection')
                 $value = URL . "get/{$prop->name}/{$className}/{$this->getId()}";
-            else
-                $value = $this->$getter();
 
             if (gettype($value) == 'object' && is_subclass_of($value, 'Nienfba\Framework\Entity'))
                 $value = URL . "get/{$prop->name}/{$value->getId()}";
@@ -154,11 +147,6 @@ class Entity implements \JsonSerializable
 
 
         return $array;
-    }
-
-    public static function initSerializationLevel()
-    {
-        self::$serializeLevel = 1;
     }
 
     /** Permet de renvoyer un tableau pour structurer une requête d'hydratation  des DATA
