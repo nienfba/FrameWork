@@ -63,3 +63,13 @@ const DEFAULT_CONTROLLER = 'front';
  * @var string Default action in called controller or in default controller
  */
 const DEFAULT_ACTION = 'home';
+
+
+/** JWT (Json Web Token) */
+
+/**
+ * @var string
+ */
+const JWT_SECRET_KEY = "maKeySecretPourMonTokenJWT";
+const JWT_SERVER_NAME = URL;
+const JWT_ALGO = 'HS512';
